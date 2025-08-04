@@ -49,7 +49,7 @@ npm start
 Frontend runs on: http://localhost:5173
 
 Live Deployment 🌐
-Frontend (Netlify/Vercel): https://mini-linkedin-frontend.vercel.app
+Frontend (Netlify/Vercel): https://mini-linkedin.netlify.app
 
 Backend (Render): https://mini-linkedin-backend.onrender.com
 
