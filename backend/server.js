@@ -12,20 +12,20 @@ connectDB();
 // Initialize express app
 const app = express();
 
-// Log for debugging
+// Debug log
 console.log("Allowed Frontend URL:", process.env.FRONTEND_URL);
 
-// Allowed origins (Netlify + localhost for development)
+// Allowed origins (Netlify + localhost)
 const allowedOrigins = [
   process.env.FRONTEND_URL || "https://charming-brioche-9c28c8.netlify.app",
   "http://localhost:5173"
 ];
 
-// CORS configuration
+// Configure CORS
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl)
+      // Allow requests with no origin (like curl/postman)
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
@@ -41,7 +41,7 @@ app.use(
 // Handle preflight requests
 app.options("*", cors());
 
-// Middleware to parse JSON
+// Middleware
 app.use(express.json());
 
 // Import routes
