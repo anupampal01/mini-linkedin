@@ -16,15 +16,15 @@ console.log("Allowed Frontend URL:", process.env.FRONTEND_URL);
 
 // Allowed origins
 const allowedOrigins = [
-  process.env.FRONTEND_URL || "https://charming-brioche-9c28c8.netlify.app",
+  process.env.FRONTEND_URL?.replace(/\/$/, "") || "https://charming-brioche-9c28c8.netlify.app",
   "http://localhost:5173"
 ];
 
-// CORS
+// CORS setup
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
+      if (!origin) return callback(null, true); // allow non-browser tools
       if (allowedOrigins.includes(origin)) return callback(null, true);
       return callback(new Error("Not allowed by CORS"));
     },
@@ -33,10 +33,10 @@ app.use(
   })
 );
 
-// Preflight
-app.options("*", cors());
+// Preflight fix
+app.options("/*", cors());
 
-// Parse JSON
+// JSON parser
 app.use(express.json());
 
 // Routes
@@ -48,6 +48,6 @@ app.use((req, res) => {
   res.status(404).json({ message: "API endpoint not found" });
 });
 
-// Server
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
