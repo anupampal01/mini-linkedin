@@ -6,6 +6,8 @@ const connectDB = require("./config/db");
 // Load environment variables
 dotenv.config();
 connectDB();
+app.use(cors());
+
 
 const authRoutes = require("./routes/authRoutes");
 const postRoutes = require("./routes/postRoutes");
@@ -21,15 +23,12 @@ const allowedOrigins = [
   "http://localhost:5173"
 ];
 
-// CORS configuration
-app.use(
-  cors({
-    origin: allowedOrigins,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+// Allow only your Netlify domain
+app.use(cors({
+  origin: 'https://charming-brioche-9c28c8.netlify.app', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 
 // Handle preflight requests globally
 app.options("*", cors({
