@@ -5,46 +5,53 @@ const connectDB = require("./config/db");
 
 // Load environment variables
 dotenv.config();
+
+// Connect to MongoDB
 connectDB();
-app.use(cors());
 
-
-const authRoutes = require("./routes/authRoutes");
-const postRoutes = require("./routes/postRoutes");
-
+// Initialize express app
 const app = express();
 
 // Log for debugging
 console.log("Allowed Frontend URL:", process.env.FRONTEND_URL);
 
-// Allowed origins (Netlify + localhost for dev)
+// Allowed origins (Netlify + localhost for development)
 const allowedOrigins = [
   process.env.FRONTEND_URL || "https://charming-brioche-9c28c8.netlify.app",
   "http://localhost:5173"
 ];
 
-// Allow only your Netlify domain
-app.use(cors({
-  origin: 'https://charming-brioche-9c28c8.netlify.app', 
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
+// CORS configuration
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);
 
-// Handle preflight requests globally
-app.options("*", cors({
-  origin: allowedOrigins,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-}));
+// Handle preflight requests
+app.options("*", cors());
 
 // Middleware to parse JSON
 app.use(express.json());
 
-// Routes
+// Import routes
+const authRoutes = require("./routes/authRoutes");
+const postRoutes = require("./routes/postRoutes");
+
+// Use routes
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 
-// Server listening
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
