@@ -24,7 +24,7 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // allow non-browser tools
+      if (!origin) return callback(null, true); // allow tools like Postman
       if (allowedOrigins.includes(origin)) return callback(null, true);
       return callback(new Error("Not allowed by CORS"));
     },
@@ -33,8 +33,7 @@ app.use(
   })
 );
 
-// Preflight fix
-app.options("/*", cors());
+// **REMOVE app.options()** — unnecessary and breaking in Express 5
 
 // JSON parser
 app.use(express.json());
