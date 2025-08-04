@@ -12,29 +12,32 @@ const postRoutes = require("./routes/postRoutes");
 
 const app = express();
 
-// Log allowed frontend URL (for debugging on Render logs)
+// Log for debugging
 console.log("Allowed Frontend URL:", process.env.FRONTEND_URL);
 
-// Allowed origins (Netlify + Localhost for development)
+// Allowed origins (Netlify + localhost for dev)
 const allowedOrigins = [
-  process.env.FRONTEND_URL,      // From .env (Netlify URL)
-  "http://localhost:5173"        // Local dev
+  process.env.FRONTEND_URL || "https://charming-brioche-9c28c8.netlify.app",
+  "http://localhost:5173"
 ];
 
 // CORS configuration
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true, // Allow cookies/authorization headers
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
+
+// Handle preflight requests globally
+app.options("*", cors({
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+}));
 
 // Middleware to parse JSON
 app.use(express.json());
